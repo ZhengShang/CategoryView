@@ -1,7 +1,9 @@
 package cn.zhengshang.categoryview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -15,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -27,11 +28,12 @@ import java.util.List;
  */
 public class CategoryView<T extends CategoryDemand> extends FrameLayout {
 
-    private final static int ROW_COUNT = 1;
+    private final static int ROW_COUNT = 2;
     private final static int COL_COUNT = 4;
     private final static int INDICATOR_MARGIN = 10;
     private final static int INDICATOR_RADIUS = 10;
     private final static int INDICATOR_SPACE = INDICATOR_RADIUS * 4;
+    private final static int ICON_SIZE = 80;
 
     private ViewPager mViewPager;
 
@@ -42,6 +44,15 @@ public class CategoryView<T extends CategoryDemand> extends FrameLayout {
     private int mWidth;
     private int mSelectedPage;
 
+    private int mRowCount;
+    private int mColCount;
+    private float mIconSize;
+    private float mTextSize;
+    private float mIndicatorSize;
+    private float mVerticalMargin;
+    private int mIndicatorUnSelectColor;
+    private int mIndicatorSelectColor;
+
     private List<T> mList;
 
     private OnItemClickListener mListener;
@@ -49,7 +60,21 @@ public class CategoryView<T extends CategoryDemand> extends FrameLayout {
     public CategoryView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
+        initAttrs(context, attrs);
         init();
+    }
+
+    private void initAttrs(Context context, AttributeSet attrs) {
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CategoryView, 0, 0);
+        mRowCount = a.getInt(R.styleable.CategoryView_cgv_row_count, ROW_COUNT);
+        mColCount = a.getInt(R.styleable.CategoryView_cgv_col_count, COL_COUNT);
+        mIconSize = a.getDimensionPixelSize(R.styleable.CategoryView_cgv_icon_size, ICON_SIZE);
+        mTextSize = a.getDimension(R.styleable.CategoryView_cgv_text_size, 12);
+        mIndicatorSize = a.getDimensionPixelSize(R.styleable.CategoryView_cgv_indicator_size, 2 * INDICATOR_RADIUS);
+        mVerticalMargin = a.getDimensionPixelSize(R.styleable.CategoryView_cgv_vertical_margin, 0);
+        mIndicatorUnSelectColor = a.getColor(R.styleable.CategoryView_cgv_indicator_unSelect_color, Color.DKGRAY);
+        mIndicatorSelectColor = a.getColor(R.styleable.CategoryView_cgv_indicator_select_color, Color.BLUE);
+        a.recycle();
     }
 
     private void init() {
@@ -96,15 +121,15 @@ public class CategoryView<T extends CategoryDemand> extends FrameLayout {
     }
 
     private void drawIndicator(Canvas canvas) {
-        int radius = INDICATOR_RADIUS;
+        float radius = mIndicatorSize / 2;
         int hBaseline = mHeight - getPaddingBottom() - INDICATOR_SPACE / 2;
         for (int i = 1; i <= mPageSize; i++) {
             if (i == mSelectedPage + 1) {
                 //Draw main color dot
-                mPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.holo_blue_light));
+                mPaint.setColor(mIndicatorSelectColor);
             } else {
                 //Draw normal dot
-                mPaint.setColor(ContextCompat.getColor(getContext(), android.R.color.darker_gray));
+                mPaint.setColor(mIndicatorUnSelectColor);
             }
             float centerX = mWidth / 2f + (i - mPageSize / 2f - 0.5f) * (INDICATOR_MARGIN + radius * 2);
             canvas.drawOval(centerX - radius, hBaseline - radius, centerX + radius, hBaseline + radius, mPaint);
@@ -186,10 +211,7 @@ public class CategoryView<T extends CategoryDemand> extends FrameLayout {
 
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            View childAt = container.getChildAt(position);
-            if (childAt != null) {
-                container.removeView(childAt);
-            }
+            container.removeView((View) object);
         }
     }
 

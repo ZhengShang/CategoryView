@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CategoryView">
+        <attr name="cgv_row_count" format="integer" />
+        <attr name="cgv_col_count" format="integer" />
+        <attr name="cgv_icon_size" format="dimension" />
+        <attr name="cgv_text_size" format="dimension" />
+        <attr name="cgv_indicator_size" format="dimension" />
+        <attr name="cgv_vertical_margin" format="dimension" />
+        <attr name="cgv_indicator_unSelect_color" format="color|reference" />
+        <attr name="cgv_indicator_select_color" format="color|reference" />
+    </declare-styleable>
+</resources>
