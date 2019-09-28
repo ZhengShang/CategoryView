@@ -55,7 +55,7 @@ public class CategoryView<T extends CategoryDemand> extends FrameLayout {
 
     private List<T> mList;
 
-    private OnItemClickListener mListener;
+    private OnItemClickListener<T> mListener;
 
     public CategoryView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -107,12 +107,12 @@ public class CategoryView<T extends CategoryDemand> extends FrameLayout {
         reloadPager();
     }
 
-    public void setListener(OnItemClickListener listener) {
+    public void setListener(OnItemClickListener<T> listener) {
         mListener = listener;
     }
 
     private void reloadPager() {
-        Adapter adapter = new Adapter<>(mPageSize, mList, mListener);
+        Adapter<T> adapter = new Adapter<>(mPageSize, mList, mListener);
         mViewPager.setAdapter(adapter);
         int offLimit = (int) (mPageSize / 2.5f);
         if (offLimit > 1) {
